@@ -5,6 +5,7 @@ export default class Camera {
     this.vel = Vector.zero()
     this.speed = 5
     this.align = Vector.one().div(2)
+    // this.align = Vector.zero()
   }
   move(vel) {
     this.pos.add(

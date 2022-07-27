@@ -46,16 +46,38 @@ export default class SheetManager {
     )
   }
   getChunk(spos, ssize, pos) {
-    spos =spos.clone().calc("mul", this.tileSize)
+    spos = spos.clone().calc("mul", this.tileSize)
     ssize = ssize.clone().calc("mul", this.tileSize)
+
     const chunk = new Chunk(pos, ssize)
+
     chunk.drawImage(
       this.sheet,
-      spos,
-      ssize,
-      pos,
-      ssize
+      spos.x,
+      spos.y,
+      ssize.x,
+      ssize.y,
+      pos.x,
+      pos.y,
+      ssize.x,
+      ssize.y
     )
     return chunk
+  }
+  /**
+   * @param {string} src
+   * @param {Vector} tileSize
+   * @return {Promise<SheetManager>}
+   */
+  static load(src, tileSize) {
+    return new Promise((res, rej) => {
+      const imageSrc = new Image()
+      imageSrc.onload = () => {
+        const SM = new SheetManager(imageSrc, tileSize)
+        res(SM)
+      }
+      imageSrc.onerror = rej
+      imageSrc.src = location.origin + src
+    })
   }
 }

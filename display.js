@@ -9,16 +9,22 @@ export default class Display extends Chunk {
   constructor(source) {
     super(Vector.zero(), Vector.zero())
     if (source) super.setCanvas(source)
-    this.looper = new Loop((deltaT) => { this.draw(deltaT) })
+    this.looper = new Loop((deltaT) => {
+      this.beforeDraw(deltaT)
+      this.draw(deltaT)
+      this.afterDraw(deltaT)
+    })
     this.camera = new Camera
   }
-  draw() {
-    const halfWidth = this.size.x / 2
-    const halfHeight = this.size.y / 2
+  beforeDraw(deltaT) { }
+  afterDraw(deltaT) { }
+  draw(deltaT) {
     const cameraX = this.camera.pos.x - (this.size.x * this.camera.align.x)
     const cameraY = this.camera.pos.y - (this.size.y * this.camera.align.y)
     const context = this.context
-    for (const chunk of this.childrens) {
+
+    while (!this.childrens.isEmpty()) {
+      const chunk = this.childrens.shift().value
       const chunkX = parseInt(chunk.pos.x) - cameraX
       const chunkY = parseInt(chunk.pos.y) - cameraY
       context.drawImage(
@@ -36,8 +42,10 @@ export default class Display extends Chunk {
   }
   startLoop() {
     this.looper.play()
+    return this
   }
   stopLoop() {
-    this.looper.play()
+    this.looper.pause()
+    return this
   }
 }

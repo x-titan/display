@@ -1,14 +1,16 @@
 import { is, each } from "https://x-titan.github.io/utils/index.js"
 import { search } from "https://x-titan.github.io/web-utils/index.js"
+import { List } from "https://x-titan.github.io/list/index.js"
 import { Vector } from "https://x-titan.github.io/vector/vector.js"
 
 export default class Chunk {
   constructor(pos, size) {
     this.pos = pos || Vector.zero()
     this.setCanvas(search.new("canvas"))
-    this.childrens = []
+    this.childrens = new List()
     this.name = "unnamed"
-    this.resize(this.size.x, this.size.y)
+    if (!size) size = Vector.zero()
+    this.resize(size.x, size.y)
   }
   append(chunk) {
     if (chunk instanceof Chunk) {
@@ -37,8 +39,20 @@ export default class Chunk {
     )
     return this
   }
+  mirror(x, y) {
+    const newCanvas = document.createElement("canvas")
+    const newContext = newCanvas.getContext("2d")
+    const w = newCanvas.width = this.size.x
+    const h = newCanvas.height = this.size.y
+    const scaleH = x ? -1 : 1
+    const scaleV = y ? -1 : 1
+    const posX = x ? w * -1 : 0 // Set x position to -100% if flip horizontal 
+    const posY = y ? h * -1 : 0;
+    ctx.scale(scaleH, scaleV);
+    newContext.drawImage(this.canvas, posX, posY, w, h)
+    ctx.restore()
+  }
   drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh) {
-    console.log(sx,sy)
     this.context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh)
     return this
   }
@@ -49,13 +63,15 @@ export default class Chunk {
     return this
   }
   clearChildrens() {
-    this.childrens = []
+    this.childrens.clear()
+    return this
   }
   clear() {
     this.context.clearRect(0, 0, this.size.x, this.size.y)
     return this
   }
   scale(number) {
+    this.resize(this.size.x * 5, this.size.y * 5)
     this.context.scale(number, number)
     return this
   }
