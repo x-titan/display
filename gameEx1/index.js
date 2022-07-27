@@ -24,8 +24,6 @@ SheetManager
   .load("/gameEx1/White Sprite sheet.png", vec(16, 16))
   .then((SM) => {
     game.resize(innerWidth, innerHeight)
-    // const chunk = SM.getChunk(vec(0, 0), vec(6, 2), vec(0, 0))
-    // game.append(chunk)
     game.startLoop()
 
 
